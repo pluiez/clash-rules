@@ -84,12 +84,12 @@ proxy-groups:
 
 # ========== 规则集 ==========
 rule-providers:
-  # 自定义规则文件，切换到 GitHub Raw URL 托管
+  # 自定义规则文件，托管在 GitHub Raw URL
   custom-reject:
     type: http
     behavior: classical
     format: yaml
-    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/reject.yaml"
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/reject.yaml"
     path: ./ruleset/custom-reject.yaml
     interval: 86400
 
@@ -97,7 +97,7 @@ rule-providers:
     type: http
     behavior: classical
     format: yaml
-    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/direct.yaml"
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/direct.yaml"
     path: ./ruleset/custom-direct.yaml
     interval: 86400
 
@@ -105,7 +105,7 @@ rule-providers:
     type: http
     behavior: classical
     format: yaml
-    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/proxy.yaml"
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/proxy.yaml"
     path: ./ruleset/custom-proxy.yaml
     interval: 86400
 

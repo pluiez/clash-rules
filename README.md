@@ -1,13 +1,13 @@
-# Clash Rules Repo Scaffold
+# clash-rules
 
-这个目录只用于托管可公开的规则文件和脱敏模板，不保存真实使用中的 `clash.yaml`。
+用于托管可公开的 Mihomo / Clash 自定义规则文件。
 
-## 目录结构
+这个仓库只保存经常变动的规则集和脱敏模板，不保存真实使用中的 `clash.yaml`，也不保存节点信息。
+
+## 1. 目录结构
 
 ```text
 .
-├── .gitignore
-├── README.md
 ├── rules/
 │   ├── direct.yaml
 │   ├── reject.yaml
@@ -16,44 +16,13 @@
     └── clash.template.yaml
 ```
 
-## 当前落地方式
+## 2. 规则文件
 
-真实使用中的 [clash.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/clash.yaml) 仍然保留在本地，但已经预留了三份自定义规则文件：
+- `rules/direct.yaml`: 强制直连的自定义规则
+- `rules/reject.yaml`: 强制拦截的自定义规则
+- `rules/proxy.yaml`: 强制走代理的自定义规则
 
-- `custom-reject` -> [rules/reject.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/reject.yaml)
-- `custom-direct` -> [rules/direct.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/direct.yaml)
-- `custom-proxy` -> [rules/proxy.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/proxy.yaml)
-
-本地先用 `type: file` 直接读取这三份文件，这样现在就能把经常变更的规则从主配置里拆出去，不需要等 GitHub 仓库建完。
-
-## 后续切到 GitHub Raw URL
-
-1. 把当前目录推到你的 GitHub 仓库。
-2. 保持 `rules/*.yaml` 路径不变。
-3. 把本地 [clash.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/clash.yaml) 中三个 `custom-*` rule-provider 从 `type: file` 改成 `type: http`。
-4. 参考 [templates/clash.template.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/templates/clash.template.yaml) 中的占位 URL，填入真实仓库地址。
-
-推荐改成下面这种形式：
-
-```yaml
-custom-reject:
-  type: http
-  behavior: classical
-  format: yaml
-  url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/reject.yaml"
-  path: ./ruleset/custom-reject.yaml
-  interval: 86400
-```
-
-`custom-direct` 和 `custom-proxy` 同理。
-
-## 规则维护约定
-
-- [rules/reject.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/reject.yaml): 需要强制拦截的域名/关键字/IP 规则
-- [rules/direct.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/direct.yaml): 需要强制直连的规则
-- [rules/proxy.yaml](/mnt/c/Users/pluie/Documents/sync/config/clash/rules/proxy.yaml): 需要强制走代理的规则
-
-三份规则文件都使用 `behavior: classical` 对应的 YAML 格式：
+当前规则文件使用 `behavior: classical` 对应的 YAML 格式：
 
 ```yaml
 payload:
@@ -62,20 +31,71 @@ payload:
   - IP-CIDR,1.2.3.0/24
 ```
 
-## 分流原则
+如果你使用的是 `behavior: domain`，则应改用 Clash wildcard 语法，例如：
 
-- `private` / `lancidr` 直连
-- 广告先走自定义拦截，再走 Loyalsoldier `reject`
-- Apple / iCloud 默认走代理
-- 自定义 `proxy` 在公开 `direct` 规则集之前，便于覆盖误判
-- 自定义 `direct` 继续补充本地直连站点
-- `GEOIP,CN,DIRECT`
-- `MATCH,🚀 节点选择`
+```yaml
+payload:
+  - '+.example.com'
+```
 
-## 验证清单
+## 3. 在配置中引用
 
-- 国内常见站点命中 `DIRECT`
-- Apple / iCloud 命中 `🍎 苹果服务`
-- 广告域名命中 `🛑 广告拦截`
-- OpenAI / Google / Telegram 命中 `🚀 节点选择`
-- 未知站点最终落到 `MATCH,🚀 节点选择`
+可在本地 `clash.yaml` / `mihomo.yaml` 中这样引用：
+
+```yaml
+rule-providers:
+  custom-reject:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/reject.yaml"
+    path: ./ruleset/custom-reject.yaml
+    interval: 86400
+
+  custom-direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/direct.yaml"
+    path: ./ruleset/custom-direct.yaml
+    interval: 86400
+
+  custom-proxy:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/proxy.yaml"
+    path: ./ruleset/custom-proxy.yaml
+    interval: 86400
+```
+
+对应的 `rules` 示例：
+
+```yaml
+rules:
+  - RULE-SET,custom-reject,🛑 广告拦截
+  - RULE-SET,custom-proxy,🚀 节点选择
+  - RULE-SET,custom-direct,DIRECT
+```
+
+规则按从上到下的顺序匹配，优先级由上往下递减。
+
+如果你没有单独的广告策略组，也可以直接写成：
+
+```yaml
+- RULE-SET,custom-reject,REJECT
+```
+
+## 4. 模板
+
+`templates/clash.template.yaml` 提供了一份脱敏模板，用于演示如何把这三个规则集接入本地主配置。
+
+## 5. 说明
+
+- 真实使用中的主配置文件不应提交到仓库
+- 节点、订阅、密钥等敏感信息不应提交到仓库
+- 这个仓库更适合存放需要频繁调整的增量规则，而不是完整配置
+
+## 6. License
+
+MIT
