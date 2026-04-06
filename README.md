@@ -31,16 +31,9 @@ payload:
   - IP-CIDR,1.2.3.0/24
 ```
 
-如果你使用的是 `behavior: domain`，则应改用 Clash wildcard 语法，例如：
-
-```yaml
-payload:
-  - '+.example.com'
-```
-
 ## 3. 在配置中引用
 
-可在本地 `clash.yaml` / `mihomo.yaml` 中这样引用：
+可在本地 `clash.yaml` / `mihomo.yaml` 中这样引用。默认使用 GitHub 原始地址；如果中国网络环境无法稳定访问 `raw.githubusercontent.com`，可把对应 `url` 改成其下方注释掉的 `gh-proxy` 版本。
 
 ```yaml
 rule-providers:
@@ -49,6 +42,8 @@ rule-providers:
     behavior: classical
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/reject.yaml"
+    # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：
+    # url: "https://gh-proxy.org/https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/reject.yaml"
     path: ./ruleset/custom-reject.yaml
     interval: 86400
 
@@ -57,6 +52,8 @@ rule-providers:
     behavior: classical
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/direct.yaml"
+    # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：
+    # url: "https://gh-proxy.org/https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/direct.yaml"
     path: ./ruleset/custom-direct.yaml
     interval: 86400
 
@@ -65,6 +62,8 @@ rule-providers:
     behavior: classical
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/proxy.yaml"
+    # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：
+    # url: "https://gh-proxy.org/https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/proxy.yaml"
     path: ./ruleset/custom-proxy.yaml
     interval: 86400
 ```
