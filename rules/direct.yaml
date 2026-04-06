@@ -1,6 +1,7 @@
 # 自定义直连规则。
-# 仅维护经常变动、且你明确希望优先直连的条目。
+# 仅维护经常变动、且你明确希望优先直连的域名。
+# 当前文件使用 behavior: domain 对应的 wildcard 语法。
 payload:
-  - DOMAIN-SUFFIX,hf-mirror.com
-  - DOMAIN-SUFFIX,gh-proxy.com
-  - DOMAIN-SUFFIX,gh-proxy.org
+  - '+.hf-mirror.com'
+  - '+.gh-proxy.com'
+  - '+.gh-proxy.org'

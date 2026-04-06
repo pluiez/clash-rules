@@ -18,17 +18,16 @@
 
 ## 2. 规则文件
 
-- `rules/direct.yaml`: 强制直连的自定义规则
-- `rules/reject.yaml`: 强制拦截的自定义规则
-- `rules/proxy.yaml`: 强制走代理的自定义规则
+- `rules/direct.yaml`: 强制直连的自定义域名规则
+- `rules/reject.yaml`: 强制拦截的自定义域名规则
+- `rules/proxy.yaml`: 强制走代理的自定义域名规则
 
-当前规则文件使用 `behavior: classical` 对应的 YAML 格式：
+当前规则文件使用 `behavior: domain` 对应的 wildcard YAML 格式：
 
 ```yaml
 payload:
-  - DOMAIN-SUFFIX,example.com
-  - DOMAIN-KEYWORD,tracker
-  - IP-CIDR,1.2.3.0/24
+  - '+.example.com'
+  - '+.sub.example.com'
 ```
 
 ## 3. 在配置中引用
@@ -39,7 +38,7 @@ payload:
 rule-providers:
   custom-reject:
     type: http
-    behavior: classical
+    behavior: domain
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/reject.yaml"
     # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：
@@ -49,7 +48,7 @@ rule-providers:
 
   custom-direct:
     type: http
-    behavior: classical
+    behavior: domain
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/direct.yaml"
     # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：
@@ -59,7 +58,7 @@ rule-providers:
 
   custom-proxy:
     type: http
-    behavior: classical
+    behavior: domain
     format: yaml
     url: "https://raw.githubusercontent.com/pluiez/clash-rules/main/rules/proxy.yaml"
     # 中国网络环境如无法稳定访问 raw.githubusercontent.com，可改用 gh-proxy：

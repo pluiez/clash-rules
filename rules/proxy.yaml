@@ -1,3 +1,4 @@
 # 自定义代理规则。
 # 适合覆盖公开规则集中未收录或误判为直连的站点。
+# 当前文件使用 behavior: domain 对应的 wildcard 语法。
 payload: []
