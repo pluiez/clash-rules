@@ -1,0 +1,6 @@
+clash.yaml
+clash.local.yaml
+*.local.yaml
+secrets/
+ruleset/
+.codex

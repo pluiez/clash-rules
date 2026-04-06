@@ -1,0 +1,218 @@
+#---------------------------------------------------#
+# Clash (mihomo) 脱敏模板
+# 模式：规则模式
+# 策略目标：
+# 1. 国内常见站点和国内 IP 尽量直连，节省流量
+# 2. Apple / iCloud 默认走代理
+# 3. 未知/未命中流量默认走代理，避免裸连
+# 真实节点信息不要提交到 Git
+#---------------------------------------------------#
+
+# ========== 基本设置 ==========
+mode: rule
+log-level: info
+ipv6: false   # 更保守，减少 IPv6 旁路/分流不一致；若你明确需要 IPv6，可改回 true
+
+# ========== DNS 设置 ==========
+dns:
+  enable: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - localhost
+    - localhost.ptlogin2.qq.com
+
+  # 仅用于引导 DoH 域名解析
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # 主 DNS：国内可直连的 DoH，保证国内环境下可用性
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+
+  # fallback：海外 DoH，用于处理非中国域名/疑似污染结果
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+    - https://1.0.0.1/dns-query
+
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+
+# ========== 代理节点 ==========
+proxies:
+  - name: example-node
+    type: ss
+    server: example.invalid
+    port: 443
+    cipher: aes-128-gcm
+    password: change-me
+
+# ========== 策略组 ==========
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - example-node
+      - DIRECT
+
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 节点选择
+
+  - name: 🛑 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+
+  - name: 🍎 苹果服务
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - DIRECT
+
+# ========== 规则集 ==========
+rule-providers:
+  # 自定义规则文件，切换到 GitHub Raw URL 托管
+  custom-reject:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/reject.yaml"
+    path: ./ruleset/custom-reject.yaml
+    interval: 86400
+
+  custom-direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/direct.yaml"
+    path: ./ruleset/custom-direct.yaml
+    interval: 86400
+
+  custom-proxy:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://raw.githubusercontent.com/<github-user>/<repo>/<branch>/rules/proxy.yaml"
+    path: ./ruleset/custom-proxy.yaml
+    interval: 86400
+
+  # 广告域名
+  reject:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    path: ./ruleset/reject.yaml
+    interval: 86400
+
+  # 私有网络域名（localhost、*.local 等）
+  private:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+    path: ./ruleset/private.yaml
+    interval: 86400
+
+  # 需要代理的域名
+  proxy:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+
+  # GFWList 被墙域名
+  gfw:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+
+  # Apple 服务
+  apple:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+    path: ./ruleset/apple.yaml
+    interval: 86400
+
+  # iCloud 服务
+  icloud:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+
+  # 直连域名
+  direct:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+
+  # 局域网 IP 及保留 IP
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+    path: ./ruleset/lancidr.yaml
+    interval: 86400
+
+  # Telegram IP 段
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
+    path: ./ruleset/telegramcidr.yaml
+    interval: 86400
+
+# ========== 分流规则 ==========
+rules:
+  # 1. 私有网络 / 局域网 / 保留地址 → 直连
+  - RULE-SET,private,DIRECT
+  - RULE-SET,lancidr,DIRECT
+
+  # 2. 自定义拦截规则优先
+  - RULE-SET,custom-reject,🛑 广告拦截
+
+  # 3. 公开广告规则集
+  - RULE-SET,reject,🛑 广告拦截
+
+  # 4. 自定义代理规则优先，可覆盖公开直连规则集的误判
+  - RULE-SET,custom-proxy,🚀 节点选择
+
+  # 5. Apple / iCloud → 默认走代理
+  - RULE-SET,icloud,🍎 苹果服务
+  - RULE-SET,apple,🍎 苹果服务
+
+  # 6. 自定义直连规则
+  - RULE-SET,custom-direct,DIRECT
+
+  # 7. 常见可直连域名 → 直连
+  - RULE-SET,direct,DIRECT
+
+  # 8. 明确需要代理的域名 / IP
+  - RULE-SET,proxy,🚀 节点选择
+  - RULE-SET,gfw,🚀 节点选择
+  - RULE-SET,telegramcidr,🚀 节点选择
+
+  # 9. 国内 IP → 直连（节省流量）
+  - GEOIP,CN,DIRECT
+
+  # 10. 兜底：其余全部走代理
+  - MATCH,🚀 节点选择
