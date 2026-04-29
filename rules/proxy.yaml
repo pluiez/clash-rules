@@ -1,4 +1,15 @@
 # 自定义代理规则。
 # 适合覆盖公开规则集中未收录或误判为直连的站点。
 # 当前文件使用 behavior: domain 对应的 wildcard 语法。
-payload: []
+payload:
+  # Google Play & Google services (Play Store download fix)
+  - '+.xn--ngstr-lra8j.com'
+  - '+.gvt1.com'
+  - '+.gvt2.com'
+  - '+.gvt3.com'
+  - '+.googleusercontent.com'
+  - '+.googlevideo.com'
+  - '+.googleapis.com'
+  - '+.googleapis.cn'
+  - '+.gstatic.com'
+  - '+.1e100.net'
