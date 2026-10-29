@@ -5,3 +5,49 @@ payload:
   - '+.hf-mirror.com'
   - '+.gh-proxy.com'
   - '+.gh-proxy.org'
+
+  # 富途（MetaCubeX futu 规则集）
+  - '+.futu.cn'
+  - '+.futu.link'
+  - '+.futu5.com'
+  - '+.futuau.com'
+  - '+.futuesop.com'
+  - '+.futufin.com'
+  - '+.futuhk.com'
+  - '+.futuhk1.com'
+  - '+.futuhk2.com'
+  - '+.futuhkapp.com'
+  - '+.futuhn.com'
+  - '+.futuholdings.com'
+  - '+.futuniuniu.com'
+  - '+.futunn.com'
+  - '+.futuoa.com'
+  - '+.futusg.com'
+  - '+.futustatic.com'
+  - '+.fututrade.com'
+
+  # moomoo（MetaCubeX futu 规则集）
+  - '+.moomoo.com'
+  - '+.moomooequity.com'
+  - '+.moomootrustee.com'
+
+  # 富途 / moomoo 补充域名（Loyalsoldier gfw 规则集）
+  - '+.futu.com'
+  - '+.futu0.com'
+  - '+.futu1.com'
+  - '+.futu2.com'
+  - '+.futu3.com'
+  - '+.futu4.com'
+  - '+.futu6.com'
+  - '+.futu7.com'
+  - '+.futu8.com'
+  - '+.futu9.com'
+  - '+.futubull.cn'
+  - '+.futuchain.com'
+  - '+.futuinc.com'
+  - '+.fututrustee.com'
+  - '+.api.moomoobull.com'
+
+  # 来源：
+  # https://github.com/MetaCubeX/meta-rules-dat/blob/meta/geo/geosite/futu.list
+  # https://github.com/Loyalsoldier/clash-rules/blob/release/gfw.txt
