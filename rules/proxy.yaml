@@ -13,3 +13,12 @@ payload:
   - '+.googleapis.cn'
   - '+.gstatic.com'
   - '+.1e100.net'
+
+  # 强制代理例外：避免国内规则集将境外服务资源误判为直连
+  - '+.trellocdn.com'
+  - '+.tiktokrow-cdn.com'
+  - '+.pikpak.me'
+  - '+.pikpakdrive.com'
+  # 精确匹配 GitLab 资源，不扩大到其他阿里云租户
+  - 'gitlab-assets.oss-cn-hongkong.aliyuncs.com'
+  - '+.1drv.ms'
