@@ -22,3 +22,9 @@ payload:
   # 精确匹配 GitLab 资源，不扩大到其他阿里云租户
   - 'gitlab-assets.oss-cn-hongkong.aliyuncs.com'
   - '+.1drv.ms'
+
+  # Claude / Anthropic 服务
+  - 'api.anthropic.com'
+  - 'http-intake.logs.us5.datadoghq.com'
+  - 'bridge.claudeusercontent.com'
+  - 'downloads.claude.ai'
